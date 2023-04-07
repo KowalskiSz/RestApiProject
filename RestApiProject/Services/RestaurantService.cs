@@ -8,6 +8,7 @@ using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using NLog;
 using Microsoft.Extensions.Logging;
+using RestApiProject.Exceptions;
 
 namespace RestApiProject.Services
 {
@@ -21,9 +22,9 @@ namespace RestApiProject.Services
 
         int CreateRes(CreateRestaurantDto createRestaurantDto);
 
-        bool DeleteRecord(int id);
+        void DeleteRecord(int id);
 
-        bool UpdateRecord(UpdateRestaurantDto data, int id);
+        void UpdateRecord(UpdateRestaurantDto data, int id);
     }
 
     public class RestaurantService: IRestaurantService
@@ -67,7 +68,7 @@ namespace RestApiProject.Services
 
             if (restaurant is null)
             {
-                return null;
+                throw new NotFoundException("Restaurant not found");
             }
 
             //to Dto type
@@ -86,7 +87,7 @@ namespace RestApiProject.Services
             return restaurant.Id;
         }
 
-        public bool DeleteRecord(int id)
+        public void DeleteRecord(int id)
         {
             //logger Warning defined in this method (service)
             _logger.LogError($"restaurant with id:{id} DELETE invoked");
@@ -95,21 +96,20 @@ namespace RestApiProject.Services
 
             if(restaurant is null)
             {
-                return false; 
+                throw new NotFoundException("Restaurant not found");
             }
 
             _dbContext.Restaurants.Remove(restaurant);
             _dbContext.SaveChanges();
-
-            return true; 
+ 
         }
 
-        public bool UpdateRecord(UpdateRestaurantDto data, int id)
+        public void UpdateRecord(UpdateRestaurantDto data, int id)
         {
             var restaurant = _dbContext.Restaurants.FirstOrDefault(r => r.Id == id);
             if (restaurant is null)
             {
-                return false; 
+                throw new NotFoundException("Restaurant not found"); 
             }
 
             restaurant.Name = data.Name;
@@ -117,9 +117,6 @@ namespace RestApiProject.Services
             restaurant.hasDelivery = data.hasDelivery;
 
             _dbContext.SaveChanges();
-
-            return true;
-
         }
 
     }

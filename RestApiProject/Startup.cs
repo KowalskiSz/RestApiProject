@@ -38,6 +38,9 @@ namespace RestApiProject
             services.AddAutoMapper(this.GetType().Assembly);
             services.AddScoped<IRestaurantService, RestaurantService>();
             services.AddScoped<ErrorHandlingMiddleware>();
+            services.AddScoped<TimeRequestMiddleware>();
+            //Adding the swagger documentacion
+            services.AddSwaggerGen();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,9 +53,22 @@ namespace RestApiProject
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseMiddleware<ErrorHandlingMiddleware>(); 
+
+            #region Register MIDDLEWARES 
+
+            app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseMiddleware<TimeRequestMiddleware>();
+
+            #endregion
 
             app.UseHttpsRedirection();
+
+            //Getting access to the Swagger UI - info - Endpoints, dtos
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Restaurant API Project");
+            });
 
             app.UseRouting();
 

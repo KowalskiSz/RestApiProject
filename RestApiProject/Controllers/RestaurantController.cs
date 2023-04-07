@@ -31,7 +31,6 @@ namespace RestApiProject.Controllers
 
             var resultGetAll = _restaurantService.GetAll();
 
-
             return (Ok(resultGetAll));
         }
 
@@ -41,12 +40,6 @@ namespace RestApiProject.Controllers
         {
 
             var resultGetById = _restaurantService.GetById(id);
-
-            if (resultGetById is null)
-            {
-                return NotFound();
-            }
-
 
             return Ok(resultGetById);
         }
@@ -72,14 +65,9 @@ namespace RestApiProject.Controllers
         [HttpDelete("{id}")]
         public ActionResult DeleteRecord([FromRoute] int id)
         {
-            bool result = _restaurantService.DeleteRecord(id);
+            _restaurantService.DeleteRecord(id);
 
-            if (result)
-            {
-                return NoContent();
-            }
-
-            return NotFound();
+            return NoContent();
 
         }
 
@@ -93,13 +81,7 @@ namespace RestApiProject.Controllers
                 return BadRequest(ModelState);
             }
 
-            bool result = _restaurantService.UpdateRecord(data, id); 
-
-            if(!result)
-            {
-                return NotFound();
-            }
-
+            _restaurantService.UpdateRecord(data, id); 
             return Ok();
 
 
